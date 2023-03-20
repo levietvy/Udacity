@@ -3,6 +3,9 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.services.AuthenticationService;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -63,17 +66,12 @@ public class FileController {
     }
 
     @GetMapping("/view/{fileId}")
-    public String viewFile(@PathVariable int fileId, Model model){
+    public ResponseEntity<byte[]> viewFile(@PathVariable int fileId) {
         File file = fileService.getFileById(fileId);
-        try {
-            String fileContent = new String(file.getFileData());
-            model.addAttribute("pageTitle", file.getFileName());
-            model.addAttribute("fileContent", fileContent);
-            model.addAttribute("fileName", file.getFileName());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return "fileViewing";
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(file.getContentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
+                .body(file.getFileData());
     }
 
     private static HttpSession assignHttpSession(HttpSession httpSession, int isSuccess, String errorMessage, String exceptionMessage){

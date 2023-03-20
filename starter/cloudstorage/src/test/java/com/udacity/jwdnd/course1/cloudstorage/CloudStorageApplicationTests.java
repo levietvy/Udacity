@@ -3,7 +3,6 @@ package com.udacity.jwdnd.course1.cloudstorage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -185,8 +184,8 @@ class CloudStorageApplicationTests {
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
 		String fileName = "upload5m.zip";
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fileUpload")));
-		WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("file")));
+		WebElement fileSelectButton = driver.findElement(By.id("file"));
 		fileSelectButton.sendKeys(new File(fileName).getAbsolutePath());
 
 		WebElement uploadButton = driver.findElement(By.id("uploadButton"));

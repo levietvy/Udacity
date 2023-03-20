@@ -13,32 +13,35 @@ public class CredentialService {
 
     CredentialMapper credentialMapper;
     HashService hashService;
+    EncryptionService encryptionService;
 
-    public CredentialService(CredentialMapper credentialMapper, HashService hashService) {
+    public CredentialService(CredentialMapper credentialMapper, HashService hashService, EncryptionService encryptionService) {
         this.credentialMapper = credentialMapper;
         this.hashService = hashService;
-    }
-
-    public int insertCredential(Credential credential){
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        String encodeSalt = Base64.getEncoder().encodeToString(salt);
-        String hashedPassword = hashService.getHashedValue(credential.getPassword(), encodeSalt);
-        credential.setKey(encodeSalt);
-        credential.setPassword(hashedPassword);
-        return credentialMapper.insertCredential(credential);
+        this.encryptionService = encryptionService;
     }
 
     public List<Credential> getCredentialsListByUserId(int userId){
         return credentialMapper.getCredentialsListByUserId(userId);
     }
 
-    public int updateCredential(Credential credential){
+    public int insertOrUpdateCredential(Credential credential){
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        String encodeSalt = Base64.getEncoder().encodeToString(salt);
+        String encryptPassword = encryptionService.encryptValue(credential.getPassword(), encodeSalt);
+        credential.setKey(encodeSalt);
+        credential.setPassword(encryptPassword);
+        if (credential.getCredentialId() == 0) {
+            return credentialMapper.insertCredential(credential);
+        }
         return credentialMapper.updateCredential(credential);
     }
 
     public int deleteCredential(int credentialId){
         return credentialMapper.deleteCredentialById(credentialId);
     }
+
+    public Credential getCredentialById(int credentialId) { return credentialMapper.getCredentialById(credentialId); }
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/signup")
 public class SignUpController {
@@ -25,7 +27,7 @@ public class SignUpController {
     }
 
     @PostMapping
-    public String signupUser(@ModelAttribute User user, Model model){
+    public String signupUser(@ModelAttribute User user, Model model, HttpSession httpSession){
         String signupError = "";
 
         if (userService.getUser(user.getUsername()) != null){
@@ -37,12 +39,12 @@ public class SignUpController {
             }
         }
 
-
-        if (signupError == ""){
-            model.addAttribute("signupSuccess", true);
+        if ("".equals(signupError)){
+            httpSession.setAttribute("signupSuccess", true);
         } else {
             model.addAttribute("signupError", signupError);
+            return "signup";
         }
-        return "signup";
+        return "redirect:/login";
     }
 }

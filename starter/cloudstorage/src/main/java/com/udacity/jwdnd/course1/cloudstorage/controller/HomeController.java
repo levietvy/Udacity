@@ -47,6 +47,11 @@ public class HomeController {
         return "home";
     }
 
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/login";
+    }
+
     @GetMapping("/result")
     public String resultView(HttpSession httpSession, Model model){
         model.addAttribute("isSuccess", httpSession.getAttribute("isSuccess"));
